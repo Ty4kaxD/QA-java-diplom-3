@@ -8,9 +8,16 @@ import java.util.concurrent.TimeUnit;
 
 public class Browser {
     private WebDriver driver;
-    private String browserName = "chrome";
+    private String browserName;
+
+    public Browser() {
+        this.browserName = System.getProperty("browser");
+    }
 
     public WebDriver getWebDriver() {
+        if (browserName == null) {
+            browserName = "chrome";
+        }
         switch (browserName) {
             case "chrome":
                 WebDriverManager.chromedriver().setup();
@@ -23,7 +30,6 @@ public class Browser {
                 driver = new ChromeDriver();
                 driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
                 driver.manage().window().maximize();
-
                 break;
             default:
                 throw new RuntimeException("Неверное название браузера");

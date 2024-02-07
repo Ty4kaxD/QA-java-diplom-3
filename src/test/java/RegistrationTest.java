@@ -30,7 +30,6 @@ public class RegistrationTest {
     User user = new User(emailUser, passwordUser, nameUser);
     User uncorrectUser = new User(emailUser, uncorrectPassword, nameUser);
     UserApi userApi = new UserApi();
-    private String accessToken;
     private WebDriver driver;
     private Browser browser = new Browser();
 
@@ -42,7 +41,19 @@ public class RegistrationTest {
 
     @After
     public void closeBrowser() {
-                driver.quit();
+        String accessToken = userApi.loginUser(user)
+                .then()
+                .extract().path("accessToken");
+        if (accessToken != null) {
+            userApi.deleteUser(accessToken);
+        }
+        String accessTokenUncorrectUser = userApi.loginUser(uncorrectUser)
+                .then()
+                .extract().path("accessToken");
+        if (accessTokenUncorrectUser != null) {
+            userApi.deleteUser(accessTokenUncorrectUser);
+        }
+        driver.quit();
     }
 
     @Test
@@ -63,12 +74,7 @@ public class RegistrationTest {
         loginPageObject.clickToSignInButton();
         homePageObject.waitForLoadMakeOrderButton();
         assertTrue("Ошибка", homePageObject.isOrderButtonDisplayed());
-        accessToken = userApi.loginUser(user)
-                .then()
-                .extract().path("accessToken");
-        if (accessToken != null) {
-            userApi.deleteUser(accessToken);
-        }
+
     }
 
     @Test
@@ -83,12 +89,6 @@ public class RegistrationTest {
         registerPageObject.clickToRegisterButton();
         registerPageObject.checkErrorMessage();
         assertTrue("Ошибка", registerPageObject.isErrorMessageDisplayed());
-        accessToken = userApi.loginUser(uncorrectUser)
-                .then()
-                .extract().path("accessToken");
-        if (accessToken != null) {
-            userApi.deleteUser(accessToken);
-        }
     }
 
 }
