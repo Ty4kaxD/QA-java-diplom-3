@@ -1,5 +1,6 @@
 package pageobject;
 
+import constants.Constants;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -22,16 +23,17 @@ public class HomePageObject {
     private final By filling = By.xpath(".//span[text()= 'Начинки']");
     //кнопка "Оформить заказ"
     private final By makeOrder = By.xpath(".//button[text() = 'Оформить заказ']");
-    private final String site = "https://stellarburgers.nomoreparties.site/";
-     private static final By currentMenu = By.xpath("//div[contains(@class,'tab_tab__1SPyG tab_tab_type_current__2BEPc')]");
+    private final By currentMenu = By.xpath("//div[contains(@class,'tab_tab__1SPyG tab_tab_type_current__2BEPc')]");
+
     public HomePageObject(WebDriver driver) {
         this.driver = driver;
     }
 
     @Step("открываем сайт")
     public void open() {
-        driver.get(site);
+        driver.get(Constants.SITE);
     }
+
     @Step("клик по кнопке Личный кабинет")
     public void clickToPersonalAccountButton() {
         driver.findElement(personalAccountButton).click();
@@ -66,8 +68,14 @@ public class HomePageObject {
     public void waitForLoadMakeOrderButton() {
         new WebDriverWait(driver, 10).until(ExpectedConditions.visibilityOfElementLocated(makeOrder));
     }
+
     @Step("проверка что выбрана нажатая секция меню")
     public String getTextFromSelectedMenu() {
         return driver.findElement(currentMenu).getText();
+    }
+    @Step("проверка что отображается кнопка Оформить заказ")
+    public boolean isOrderButtonDisplayed() {
+        WebElement pageWindowElement = driver.findElement(makeOrder);
+        return pageWindowElement.isDisplayed();
     }
 }

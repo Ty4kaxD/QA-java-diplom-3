@@ -3,6 +3,7 @@ package pageobject;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -11,7 +12,7 @@ public class RegisterPageObject {
 
 
     //поле ввода имени
-    private final By name = By.xpath("//label[text()='Имя']/../input");;
+    private final By name = By.xpath("//label[text()='Имя']/../input");
 
     //поле ввода Email
     private final By email = By.xpath("//label[text()='Email']/../input");
@@ -69,5 +70,11 @@ public class RegisterPageObject {
     @Step("ожидание загрузки страницы")
     public void waitForLoad() {
         new WebDriverWait(driver, 10).until(ExpectedConditions.visibilityOfElementLocated(text));
+    }
+
+    @Step("проверка что отображается уведомление о неверном пароле")
+    public boolean isErrorMessageDisplayed() {
+        WebElement pageWindowElement = driver.findElement(errorMessage);
+        return pageWindowElement.isDisplayed();
     }
 }

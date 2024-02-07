@@ -1,9 +1,12 @@
-import api.pens.UserPens;
+import api.api.UserApi;
 import api.url.BaseUrl;
 import api.user.User;
+import browser.Browser;
+import constants.Constants;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -24,30 +27,33 @@ public class LogOutTest {
     static String passwordUser = "userpas" + new Random().nextInt(10000);
     static String nameUser = "user" + new Random().nextInt(10000);
     User user = new User(emailUser, passwordUser, nameUser);
-    UserPens userPens = new UserPens();
+    UserApi userApi = new UserApi();
     private String accessToken;
     private WebDriver driver;
+    private Browser browser = new Browser();
 
     @Before
     public void setUp() {
         BaseUrl.setUp();
-        userPens.createUser(user);
-        accessToken = userPens.loginUser(user)
+        userApi.createUser(user);
+        accessToken = userApi.loginUser(user)
                 .then()
                 .extract()
                 .path("accessToken");
+        driver = browser.getWebDriver();
     }
 
     @After
     public void deleteUser() {
         if (accessToken != null) {
-            userPens.deleteUser(accessToken);
+            userApi.deleteUser(accessToken);
         }
         driver.quit();
     }
-
+    @Test
+    @DisplayName("Проверка выхода из личного кабинета пользователя")
     public void logOutUser() {
-        driver.get("https://stellarburgers.nomoreparties.site/login");
+        driver.get(Constants.SITE_LOGIN);
         HomePageObject homePageObject = new HomePageObject(driver);
         LoginPageObject loginPageObject = new LoginPageObject(driver);
         AccountPageObject accountPageObject = new AccountPageObject(driver);
@@ -60,29 +66,8 @@ public class LogOutTest {
         accountPageObject.waitForLoad();
         accountPageObject.clickToExitButton();
         loginPageObject.waitForLoad();
-        WebElement pageWindowElement = driver.findElement(By.xpath("//h2[text()='Вход']"));
-        assertTrue("Ошибка", pageWindowElement.isDisplayed());
+        assertTrue("Ошибка", loginPageObject.isSignInButtonDisplayed());
 
     }
 
-    @Test
-    @DisplayName("Проверка выхода из личного кабинета пользователя. Chrome")
-    public void logOutUserChrome() {
-        WebDriverManager.chromedriver().driverVersion("121").setup();
-        driver = new ChromeDriver();
-        driver.manage().window().setSize(new Dimension(1800, 1000));
-        logOutUser();
-
-    }
-
-    @Test
-    @DisplayName("Проверка выхода из личного кабинета пользователя. Yandex")
-    public void logOutUserYandex() {
-        WebDriverManager.chromedriver().driverVersion("96").setup();
-        ChromeOptions options = new ChromeOptions();
-        options.setBinary("C:\\Users\\User\\AppData\\Local\\Yandex\\YandexBrowser\\Application\\browser.exe");
-        driver = new ChromeDriver(options);
-        driver.manage().window().setSize(new Dimension(1800, 1000));
-        logOutUser();
-    }
 }

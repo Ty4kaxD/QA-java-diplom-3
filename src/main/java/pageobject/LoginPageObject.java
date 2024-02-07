@@ -3,6 +3,7 @@ package pageobject;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -46,5 +47,10 @@ public class LoginPageObject {
 
     public LoginPageObject(WebDriver driver) {
         this.driver = driver;
+    }
+    @Step("проверка что отображается кнопка Вход")
+    public boolean isSignInButtonDisplayed() {
+        WebElement pageWindowElement = driver.findElement(titleEnter);
+        return pageWindowElement.isDisplayed();
     }
 }
